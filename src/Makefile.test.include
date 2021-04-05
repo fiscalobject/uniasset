@@ -29,11 +29,11 @@ FUZZ_TARGETS = \
 if ENABLE_FUZZ
 noinst_PROGRAMS += $(FUZZ_TARGETS:=)
 else
-bin_PROGRAMS += test/test_ufo
+bin_PROGRAMS += test/test_uniasset
 endif
 
 TEST_SRCDIR = test
-TEST_BINARY=test/test_ufo$(EXEEXT)
+TEST_BINARY=test/test_uniasset$(EXEEXT)
 
 JSON_TEST_FILES = \
   test/data/script_tests.json \
@@ -61,93 +61,15 @@ FUZZ_SUITE = \
 
 # test_bitcoin binary #
 BITCOIN_TESTS =\
-  test/arith_uint256_tests.cpp \
-  test/scriptnum10.h \
-  test/addrman_tests.cpp \
-  test/amount_tests.cpp \
-  test/allocator_tests.cpp \
-  test/base32_tests.cpp \
-  test/base58_tests.cpp \
-  test/base64_tests.cpp \
-  test/bech32_tests.cpp \
-  test/bip32_tests.cpp \
-  test/blockchain_tests.cpp \
-  test/blockencodings_tests.cpp \
-  test/blockfilter_tests.cpp \
-  test/bloom_tests.cpp \
-  test/bswap_tests.cpp \
-  test/checkqueue_tests.cpp \
-  test/coins_tests.cpp \
-  test/compilerbug_tests.cpp \
-  test/compress_tests.cpp \
-  test/crypto_tests.cpp \
-  test/cuckoocache_tests.cpp \
-  test/denialofservice_tests.cpp \
-  test/descriptor_tests.cpp \
-  test/fs_tests.cpp \
-  test/getarg_tests.cpp \
-  test/hash_tests.cpp \
-  test/key_io_tests.cpp \
-  test/key_tests.cpp \
-  test/limitedmap_tests.cpp \
-  test/dbwrapper_tests.cpp \
-  test/main_tests.cpp \
-  test/mempool_tests.cpp \
-  test/merkle_tests.cpp \
-  test/merkleblock_tests.cpp \
-  test/miner_tests.cpp \
-  test/multisig_tests.cpp \
-  test/net_tests.cpp \
-  test/netbase_tests.cpp \
-  test/pmt_tests.cpp \
-  test/policyestimator_tests.cpp \
-  test/pow_tests.cpp \
-  test/prevector_tests.cpp \
-  test/raii_event_tests.cpp \
-  test/random_tests.cpp \
-  test/reverselock_tests.cpp \
-  test/rpc_tests.cpp \
-  test/sanity_tests.cpp \
-  test/scheduler_tests.cpp \
-  test/script_p2sh_tests.cpp \
-  test/script_tests.cpp \
-  test/script_standard_tests.cpp \
-  test/scriptnum_tests.cpp \
-  test/serialize_tests.cpp \
-  test/sighash_tests.cpp \
-  test/sigopcount_tests.cpp \
-  test/skiplist_tests.cpp \
-  test/streams_tests.cpp \
-  test/sync_tests.cpp \
-  test/timedata_tests.cpp \
-  test/torcontrol_tests.cpp \
-  test/transaction_tests.cpp \
-  test/txindex_tests.cpp \
-  test/txvalidation_tests.cpp \
-  test/txvalidationcache_tests.cpp \
-  test/uint256_tests.cpp \
-  test/util_tests.cpp \
-  test/validation_block_tests.cpp \
-  test/versionbits_tests.cpp
+  test/arith_uint256_tests.cpp
 
 if ENABLE_PROPERTY_TESTS
-BITCOIN_TESTS += \
-  test/key_properties.cpp
-
 BITCOIN_TEST_SUITE += \
   test/gen/crypto_gen.cpp \
   test/gen/crypto_gen.h
 endif
 
 if ENABLE_WALLET
-BITCOIN_TESTS += \
-  wallet/test/db_tests.cpp \
-  wallet/test/psbt_wallet_tests.cpp \
-  wallet/test/wallet_tests.cpp \
-  wallet/test/wallet_crypto_tests.cpp \
-  wallet/test/coinselector_tests.cpp \
-  wallet/test/init_tests.cpp
-
 BITCOIN_TEST_SUITE += \
   wallet/test/wallet_test_fixture.cpp \
   wallet/test/wallet_test_fixture.h \
@@ -155,22 +77,22 @@ BITCOIN_TEST_SUITE += \
   wallet/test/init_test_fixture.h
 endif
 
-test_test_ufo_SOURCES = $(BITCOIN_TEST_SUITE) $(BITCOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
-test_test_ufo_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(TESTDEFS) $(EVENT_CFLAGS)
-test_test_ufo_LDADD =
+test_test_uniasset_SOURCES = $(BITCOIN_TEST_SUITE) $(BITCOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
+test_test_uniasset_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(TESTDEFS) $(EVENT_CFLAGS)
+test_test_uniasset_LDADD =
 if ENABLE_WALLET
-test_test_ufo_LDADD += $(LIBBITCOIN_WALLET)
+test_test_uniasset_LDADD += $(LIBBITCOIN_WALLET)
 endif
 
-test_test_ufo_LDADD += $(LIBBITCOIN_SERVER) $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CONSENSUS) $(LIBBITCOIN_CRYPTO) $(LIBUNIVALUE) \
+test_test_uniasset_LDADD += $(LIBBITCOIN_SERVER) $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CONSENSUS) $(LIBBITCOIN_CRYPTO) $(LIBUNIVALUE) \
   $(LIBLEVELDB) $(LIBLEVELDB_SSE42) $(LIBMEMENV) $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS)
-test_test_ufo_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+test_test_uniasset_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
-test_test_ufo_LDADD += $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(RAPIDCHECK_LIBS)
-test_test_ufo_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -static
+test_test_uniasset_LDADD += $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(RAPIDCHECK_LIBS)
+test_test_uniasset_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -static
 
 if ENABLE_ZMQ
-test_test_ufo_LDADD += $(ZMQ_LIBS)
+test_test_uniasset_LDADD += $(ZMQ_LIBS)
 endif
 
 if ENABLE_FUZZ
@@ -532,7 +454,7 @@ test_fuzz_blocktransactionsrequest_deserialize_LDADD = \
 test_fuzz_blocktransactionsrequest_deserialize_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 endif # ENABLE_FUZZ
 
-nodist_test_test_ufo_SOURCES = $(GENERATED_TEST_FILES)
+nodist_test_test_uniasset_SOURCES = $(GENERATED_TEST_FILES)
 
 $(BITCOIN_TESTS): $(GENERATED_TEST_FILES)
 
@@ -541,26 +463,22 @@ CLEAN_BITCOIN_TEST = test/*.gcda test/*.gcno $(GENERATED_TEST_FILES) $(BITCOIN_T
 CLEANFILES += $(CLEAN_BITCOIN_TEST)
 
 if TARGET_WINDOWS
-bitcoin_test: $(TEST_BINARY)
+uniasset_test: $(TEST_BINARY)
 else
 if ENABLE_BENCH
-bitcoin_test: $(TEST_BINARY) $(BENCH_BINARY)
+uniasset_test: $(TEST_BINARY) $(BENCH_BINARY)
 else
-bitcoin_test: $(TEST_BINARY)
+uniasset_test: $(TEST_BINARY)
 endif
 endif
 
-bitcoin_test_check: $(TEST_BINARY) FORCE
+uniasset_test_check: $(TEST_BINARY) FORCE
 	$(MAKE) check-TESTS TESTS=$^
 
-bitcoin_test_clean : FORCE
-	rm -f $(CLEAN_BITCOIN_TEST) $(test_test_ufo_OBJECTS) $(TEST_BINARY)
+uniasset_test_clean : FORCE
+	rm -f $(CLEAN_BITCOIN_TEST) $(test_test_uniasset_OBJECTS) $(TEST_BINARY)
 
 check-local: $(BITCOIN_TESTS:.cpp=.cpp.test)
-if BUILD_BITCOIN_TX
-	@echo "Running test/util/bitcoin-util-test.py..."
-	$(PYTHON) $(top_builddir)/test/util/bitcoin-util-test.py
-endif
 	@echo "Running test/util/rpcauth-test.py..."
 	$(PYTHON) $(top_builddir)/test/util/rpcauth-test.py
 if TARGET_WINDOWS

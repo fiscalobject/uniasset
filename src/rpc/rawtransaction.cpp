@@ -18,6 +18,9 @@
 #include <policy/policy.h>
 #include <policy/rbf.h>
 #include <primitives/transaction.h>
+#ifdef ENABLE_WALLET
+#include <wallet/rpcwallet.h>
+#endif
 #include <psbt.h>
 #include <rpc/rawtransaction.h>
 #include <rpc/server.h>
@@ -1034,10 +1037,101 @@ static UniValue signrawtransactionwithkey(const JSONRPCRequest& request)
 
 UniValue signrawtransaction(const JSONRPCRequest& request)
 {
-    // This method should be removed entirely in V0.19, along with the entries in the
-    // CRPCCommand table and rpc/client.cpp.
-    throw JSONRPCError(RPC_METHOD_DEPRECATED, "signrawtransaction was removed in v0.18.\n"
-        "Clients should transition to using signrawtransactionwithkey and signrawtransactionwithwallet");
+#ifdef ENABLE_WALLET
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* const pwallet = wallet.get();
+#endif
+
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 4)
+        throw std::runtime_error(
+            RPCHelpMan{"signrawtransaction",
+               "\nDEPRECATED. Sign inputs for raw transaction (serialized, hex-encoded).\n"
+               "The second optional argument (may be null) is an array of previous transaction outputs that\n"
+               "this transaction depends on but may not yet be in the block chain.\n"
+               "The third optional argument (may be null) is an array of base58-encoded private\n"
+               "keys that, if given, will be the only keys used to sign the transaction."
+#ifdef ENABLE_WALLET
+               "\n" + HelpRequiringPassphrase(pwallet) +
+#endif
+               "\n",
+               {
+                   {"hexstring", RPCArg::Type::STR, RPCArg::Optional::NO, "The transaction hex string"},
+                   {"prevtxs", RPCArg::Type::ARR, RPCArg::Optional::OMITTED_NAMED_ARG, "A json array of previous dependent transaction outputs",
+                       {
+                           {"", RPCArg::Type::OBJ, RPCArg::Optional::OMITTED, "",
+                               {
+                                   {"txid", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "The transaction id"},
+                                   {"vout", RPCArg::Type::NUM, RPCArg::Optional::NO, "The output number"},
+                                   {"scriptPubKey", RPCArg::Type::STR_HEX, RPCArg::Optional::NO, "script key"},
+                                   {"redeemScript", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "(required for P2SH) redeem script"},
+                                   {"amount", RPCArg::Type::AMOUNT, RPCArg::Optional::NO, "The amount spent"},
+                               },
+                               },
+                       },
+                   },
+                   {"privkeys", RPCArg::Type::ARR, RPCArg::Optional::NO, "A json array of base58-encoded private keys for signing",
+                       {
+                           {"privatekey", RPCArg::Type::STR_HEX, RPCArg::Optional::OMITTED, "private key in base58-encoding"},
+                       },
+                   },
+                   {"sighashtype", RPCArg::Type::STR, /* default */ "ALL", "The signature hash type. Must be one of:\n"
+                   "       \"ALL\"\n"
+                   "       \"NONE\"\n"
+                   "       \"SINGLE\"\n"
+                   "       \"ALL|ANYONECANPAY\"\n"
+                   "       \"NONE|ANYONECANPAY\"\n"
+                   "       \"SINGLE|ANYONECANPAY\"\n"
+                   },
+               },
+               RPCResult{
+                           "{\n"
+                           "  \"hex\" : \"value\",           (string) The hex-encoded raw transaction with signature(s)\n"
+                           "  \"complete\" : true|false,   (boolean) If the transaction has a complete set of signatures\n"
+                           "  \"errors\" : [                 (json array of objects) Script verification errors (if there are any)\n"
+                           "    {\n"
+                           "      \"txid\" : \"hash\",           (string) The hash of the referenced, previous transaction\n"
+                           "      \"vout\" : n,                (numeric) The index of the output to spent and used as input\n"
+                           "      \"scriptSig\" : \"hex\",       (string) The hex-encoded signature script\n"
+                           "      \"sequence\" : n,            (numeric) Script sequence number\n"
+                           "      \"error\" : \"text\"           (string) Verification or signing error related to the input\n"
+                           "    }\n"
+                           "    ,...\n"
+                           "  ]\n"
+                           "}\n"
+               },
+               RPCExamples{
+                   HelpExampleCli("signrawtransaction", "\"myhex\"")
+                   + HelpExampleRpc("signrawtransaction", "\"myhex\"")
+               },
+           }.ToString());
+
+    RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VARR, UniValue::VARR, UniValue::VSTR}, true);
+
+    // Make a JSONRPCRequest to pass on to the right signrawtransaction* command
+    JSONRPCRequest new_request;
+    new_request.id = request.id;
+    new_request.params.setArray();
+
+    // For signing with private keys
+    if (!request.params[2].isNull()) {
+        new_request.params.push_back(request.params[0]);
+        // Note: the prevtxs and privkeys are reversed for signrawtransactionwithkey
+        new_request.params.push_back(request.params[2]);
+        new_request.params.push_back(request.params[1]);
+        new_request.params.push_back(request.params[3]);
+        return signrawtransactionwithkey(new_request);
+    } else {
+#ifdef ENABLE_WALLET
+        // Otherwise sign with the wallet which does not take a privkeys parameter
+        new_request.params.push_back(request.params[0]);
+        new_request.params.push_back(request.params[1]);
+        new_request.params.push_back(request.params[3]);
+        return signrawtransactionwithwallet(new_request);
+#else
+        // If we have made it this far, then wallet is disabled and no private keys were given, so fail here.
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "No private keys available.");
+#endif
+    }
 }
 
 static UniValue sendrawtransaction(const JSONRPCRequest& request)
@@ -2064,7 +2158,7 @@ static const CRPCCommand commands[] =
     { "rawtransactions",    "decodescript",                 &decodescript,              {"hexstring"} },
     { "rawtransactions",    "sendrawtransaction",           &sendrawtransaction,        {"hexstring","allowhighfees"} },
     { "rawtransactions",    "combinerawtransaction",        &combinerawtransaction,     {"txs"} },
-    { "hidden",             "signrawtransaction",           &signrawtransaction,        {"hexstring","prevtxs","privkeys","sighashtype"} },
+    { "rawtransactions",    "signrawtransaction",           &signrawtransaction,        {"hexstring","prevtxs","privkeys","sighashtype"} },
     { "rawtransactions",    "signrawtransactionwithkey",    &signrawtransactionwithkey, {"hexstring","privkeys","prevtxs","sighashtype"} },
     { "rawtransactions",    "testmempoolaccept",            &testmempoolaccept,         {"rawtxs","allowhighfees"} },
     { "rawtransactions",    "decodepsbt",                   &decodepsbt,                {"psbt"} },

@@ -9,6 +9,10 @@ src/ufo-wallet
 src/test/test_ufo
 src/test/test_ufo_fuzzy
 src/qt/test/test_ufo-qt
+src/uniassetd
+src/uniasset-cli
+src/test/test_uniasset
+src/qt/test/test_uniasset-qt
 
 # autoreconf
 Makefile.in
@@ -38,6 +42,9 @@ share/setup.nsi
 share/qt/Info.plist
 
 src/univalue/gen
+
+# Omni Core Windows installer script
+src/omnicore/res/omnicore-setup-win.nsi
 
 src/qt/*.moc
 src/qt/moc_*.cpp
@@ -84,11 +91,14 @@ src/qt/bitcoin-qt.includes
 Makefile
 ufo-qt
 UFO-Qt.app
+uniasset-qt
+Uniasset-Qt.app
 background.tiff*
 
 # Unit-tests
 Makefile.test
 ufo-qt_test
+uniasset-qt_test
 
 # Resources cpp
 qrc_*.cpp

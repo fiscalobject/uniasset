@@ -275,7 +275,7 @@ enum ServiceFlags : uint64_t {
     NODE_NETWORK_LIMITED = (1 << 10),
     // NODE_ACP means the node supports Automatic Checkpointing
     // If this is turned off then the node will not receive checkpoints from other nodes aware of this
-    // flag. Bit 24 from the start of the experimental range has been set for this Feathercoin feature
+    // flag. Bit 24 from the start of the experimental range has been set for this UFO feature
     // to not clash with Bitcoin's future developments.
     NODE_ACP = (1 << 24),
 

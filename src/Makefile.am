@@ -82,11 +82,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += ufod
+  bin_PROGRAMS += uniassetd
 endif
 
 if BUILD_BITCOIN_CLI
-  bin_PROGRAMS += ufo-cli
+  bin_PROGRAMS += uniasset-cli
 endif
 if BUILD_BITCOIN_TX
   bin_PROGRAMS += ufo-tx
@@ -487,16 +487,16 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # bitcoind binary #
-ufod_SOURCES = bitcoind.cpp
-ufod_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-ufod_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-ufod_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+uniassetd_SOURCES = bitcoind.cpp
+uniassetd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+uniassetd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+uniassetd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-ufod_SOURCES += bitcoind-res.rc
+uniassetd_SOURCES += bitcoind-res.rc
 endif
 
-ufod_LDADD = \
+uniassetd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_SERVER) \
@@ -511,25 +511,25 @@ ufod_LDADD = \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-ufod_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
+uniassetd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
 # bitcoin-cli binary #
-ufo_cli_SOURCES = bitcoin-cli.cpp
-ufo_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-ufo_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-ufo_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+uniasset_cli_SOURCES = bitcoin-cli.cpp
+uniasset_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+uniasset_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+uniasset_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-ufo_cli_SOURCES += bitcoin-cli-res.rc
+uniasset_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-ufo_cli_LDADD = \
+uniasset_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-ufo_cli_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
+uniasset_cli_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
 
 # bitcoin-tx binary #
@@ -680,3 +680,6 @@ endif
 if ENABLE_QT_TESTS
 include Makefile.qttest.include
 endif
+
+# Omni Core
+include Makefile.omnicore.include

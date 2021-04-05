@@ -530,6 +530,37 @@ static UniValue getrawmempool(const JSONRPCRequest& request)
     return mempoolToJSON(fVerbose);
 }
 
+static UniValue clearmempool(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() > 0)
+        throw std::runtime_error(
+            RPCHelpMan("clearmempool",
+               "\nClears the memory pool and returns a list of the removed transactions.\n",
+               {},
+               RPCResult{
+                   "[                     (json array of string)\n"
+                   "  \"hash\"              (string) The transaction hash\n"
+                   "  ,...\n"
+                   "]\n"
+               },
+               RPCExamples{
+                   HelpExampleCli("clearmempool", "")
+                   + HelpExampleRpc("clearmempool", "")
+               }
+            ).ToString());
+
+    std::vector<uint256> vtxid;
+    mempool.queryHashes(vtxid);
+
+    UniValue removed(UniValue::VARR);
+    for (const uint256& hash : vtxid)
+        removed.push_back(hash.ToString());
+
+    mempool.clear();
+
+    return removed;
+}
+
 static UniValue getmempoolancestors(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2) {
@@ -2412,6 +2443,7 @@ static const CRPCCommand commands[] =
     { "blockchain",         "getmempooldescendants",  &getmempooldescendants,  {"txid","verbose"} },
     { "blockchain",         "getmempoolentry",        &getmempoolentry,        {"txid"} },
     { "blockchain",         "getmempoolinfo",         &getmempoolinfo,         {} },
+    { "blockchain",         "clearmempool",           &clearmempool,           {} },
     { "blockchain",         "getrawmempool",          &getrawmempool,          {"verbose"} },
     { "blockchain",         "gettxout",               &gettxout,               {"txid","n","include_mempool"} },
     { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        {} },

@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     SelectParams(CBaseChainParams::REGTEST);
     noui_connect();
     ClearDatadirCache();
-    fs::path pathTemp = fs::temp_directory_path() / strprintf("test_bitcoin-qt_%lu_%i", (unsigned long)GetTime(), (int)GetRand(100000));
+    fs::path pathTemp = fs::temp_directory_path() / strprintf("test_uniasset-qt_%lu_%i", (unsigned long)GetTime(), (int)GetRand(100000));
     fs::create_directories(pathTemp);
     gArgs.ForceSetArg("-datadir", pathTemp.string());
     auto node = interfaces::MakeNode();
@@ -80,29 +80,11 @@ int main(int argc, char *argv[])
     if (QTest::qExec(&app_tests) != 0) {
         fInvalid = true;
     }
-    URITests test1;
-    if (QTest::qExec(&test1) != 0) {
-        fInvalid = true;
-    }
-#if defined(ENABLE_WALLET) && defined(ENABLE_BIP70)
-    PaymentServerTests test2;
-    if (QTest::qExec(&test2) != 0) {
-        fInvalid = true;
-    }
-#endif
-    RPCNestedTests test3;
-    if (QTest::qExec(&test3) != 0) {
-        fInvalid = true;
-    }
     CompatTests test4;
     if (QTest::qExec(&test4) != 0) {
         fInvalid = true;
     }
 #ifdef ENABLE_WALLET
-    WalletTests test5;
-    if (QTest::qExec(&test5) != 0) {
-        fInvalid = true;
-    }
     AddressBookTests test6;
     if (QTest::qExec(&test6) != 0) {
         fInvalid = true;

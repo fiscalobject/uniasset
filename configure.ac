@@ -9,15 +9,20 @@ define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2021)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
 define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[UFO Core]])
-AC_INIT([UFO Core],m4_join([.], _CLIENT_VERSION_MAJOR, _CLIENT_VERSION_MINOR, _CLIENT_VERSION_REVISION, m4_if(_CLIENT_VERSION_BUILD, [0], [], _CLIENT_VERSION_BUILD))m4_if(_CLIENT_VERSION_RC, [0], [], [rc]_CLIENT_VERSION_RC),[https://github.com/fiscalobject/ufo/issues],[ufo],[https://ufobject.com/])
+define(_OMNICORE_VERSION_MAJOR, 0)
+define(_OMNICORE_VERSION_MINOR, 9)
+define(_OMNICORE_VERSION_PATCH, 1)
+define(_OMNICORE_VERSION_BUILD, 0)
+define(_OMNICORE_VERSION_RC, 0)
+AC_INIT([Uniasset],m4_join([.], _OMNICORE_VERSION_MAJOR, _OMNICORE_VERSION_MINOR, _OMNICORE_VERSION_PATCH, m4_if(_OMNICORE_VERSION_BUILD, [0], [], _OMNICORE_VERSION_BUILD))m4_if(_OMNICORE_VERSION_RC, [0], [], [rc]_OMNICORE_VERSION_RC),[https://github.com/fiscalobject/uniasset/issues],[uniasset],[http://ufobject.com/])
 AC_CONFIG_SRCDIR([src/validation.cpp])
 AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
-BITCOIN_DAEMON_NAME=ufod
-BITCOIN_GUI_NAME=ufo-qt
-BITCOIN_CLI_NAME=ufo-cli
+BITCOIN_DAEMON_NAME=uniassetd
+BITCOIN_GUI_NAME=uniasset-qt
+BITCOIN_CLI_NAME=uniasset-cli
 BITCOIN_TX_NAME=ufo-tx
 BITCOIN_WALLET_TOOL_NAME=ufo-wallet
 
@@ -122,9 +127,9 @@ AC_ARG_ENABLE([upnp-default],
   [use_upnp_default=no])
 
 AC_ARG_ENABLE(tests,
-    AS_HELP_STRING([--enable-tests],[compile tests (default is not to compile)]),
+    AS_HELP_STRING([--disable-tests],[compile tests (default is to compile)]),
     [use_tests=$enableval],
-    [use_tests=no])
+    [use_tests=yes])
 
 AC_ARG_ENABLE(gui-tests,
     AS_HELP_STRING([--disable-gui-tests],[do not compile GUI tests (default is to compile if GUI and tests enabled)]),
@@ -420,7 +425,7 @@ CPPFLAGS="$CPPFLAGS -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS"
 
 AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],
-  [build ufo-cli ufo-tx ufo-wallet (default=yes)])],
+  [build uniasset-cli ufo-tx ufo-wallet (default=yes)])],
   [build_bitcoin_utils=$withval],
   [build_bitcoin_utils=yes])
 
@@ -450,7 +455,7 @@ AC_ARG_WITH([libs],
 
 AC_ARG_WITH([daemon],
   [AS_HELP_STRING([--with-daemon],
-  [build ufod daemon (default=yes)])],
+  [build uniassetd daemon (default=yes)])],
   [build_bitcoind=$withval],
   [build_bitcoind=yes])
 
@@ -722,7 +727,7 @@ fi
 
 if test x$TARGET_OS != xwindows; then
   # All windows code is PIC, forcing it on just adds useless compile warnings
-  AX_CHECK_COMPILE_FLAG([-fPIC],[PIC_FLAGS="-fPIC" && CFLAGS="$CFLAGS -fPIC"])
+  AX_CHECK_COMPILE_FLAG([-fPIC],[PIC_FLAGS="-fPIC" && CXXFLAGS="$CXXFLAGS -fPIC" && CPPFLAGS="$CPPFLAGS -fPIC" && CFLAGS="$CFLAGS -fPIC"])
 fi
 
 # All versions of gcc that we commonly use for building are subject to bug
@@ -1247,11 +1252,11 @@ if test x$have_protobuf != xno &&
   BITCOIN_QT_PATH_PROGS([PROTOC], [protoc],$protoc_bin_path)
 fi
 
-AC_MSG_CHECKING([whether to build ufod])
+AC_MSG_CHECKING([whether to build uniassetd])
 AM_CONDITIONAL([BUILD_BITCOIND], [test x$build_bitcoind = xyes])
 AC_MSG_RESULT($build_bitcoind)
 
-AC_MSG_CHECKING([whether to build ufo-cli])
+AC_MSG_CHECKING([whether to build uniasset-cli])
 AM_CONDITIONAL([BUILD_BITCOIN_CLI], [test x$build_bitcoin_cli = xyes])
 AC_MSG_RESULT($build_bitcoin_cli)
 
@@ -1360,7 +1365,7 @@ if test x$bitcoin_enable_qt != xno; then
     AC_MSG_WARN("xgettext is required to update qt translations")
   fi
 
-  AC_MSG_CHECKING([whether to build test_ufo-qt])
+  AC_MSG_CHECKING([whether to build test_uniasset-qt])
   if test x$use_gui_tests$bitcoin_enable_qt_test = xyesyes; then
     AC_MSG_RESULT([yes])
     BUILD_TEST_QT="yes"
@@ -1388,7 +1393,7 @@ fi
 
 AM_CONDITIONAL([ENABLE_ZMQ], [test "x$use_zmq" = "xyes"])
 
-AC_MSG_CHECKING([whether to build test_ufo])
+AC_MSG_CHECKING([whether to build test_uniasset])
 if test x$use_tests = xyes; then
   AC_MSG_RESULT([yes])
   BUILD_TEST="yes"
@@ -1453,6 +1458,15 @@ AC_SUBST(BITCOIN_CLI_NAME)
 AC_SUBST(BITCOIN_TX_NAME)
 AC_SUBST(BITCOIN_WALLET_TOOL_NAME)
 
+AC_DEFINE(OMNICORE_VERSION_MAJOR, _OMNICORE_VERSION_MAJOR, [Omni Core major version])
+AC_DEFINE(OMNICORE_VERSION_MINOR, _OMNICORE_VERSION_MINOR, [Omni Core minor version])
+AC_DEFINE(OMNICORE_VERSION_PATCH, _OMNICORE_VERSION_PATCH, [Omni Core patch version])
+AC_DEFINE(OMNICORE_VERSION_BUILD, _OMNICORE_VERSION_BUILD, [Omni Core build number])
+AC_SUBST(OMNICORE_VERSION_MAJOR, _OMNICORE_VERSION_MAJOR)
+AC_SUBST(OMNICORE_VERSION_MINOR, _OMNICORE_VERSION_MINOR)
+AC_SUBST(OMNICORE_VERSION_PATCH, _OMNICORE_VERSION_PATCH)
+AC_SUBST(OMNICORE_VERSION_BUILD, _OMNICORE_VERSION_BUILD)
+
 AC_SUBST(RELDFLAGS)
 AC_SUBST(DEBUG_CPPFLAGS)
 AC_SUBST(WARN_CXXFLAGS)
@@ -1489,6 +1503,7 @@ AC_SUBST(ZMQ_LIBS)
 AC_SUBST(PROTOBUF_LIBS)
 AC_SUBST(QR_LIBS)
 AC_CONFIG_FILES([Makefile src/Makefile doc/man/Makefile share/setup.nsi share/qt/Info.plist test/config.ini])
+AC_CONFIG_FILES([src/omnicore/res/omnicore-setup-win.nsi])
 AC_CONFIG_FILES([contrib/devtools/split-debug.sh],[chmod +x contrib/devtools/split-debug.sh])
 AM_COND_IF([HAVE_DOXYGEN], [AC_CONFIG_FILES([doc/Doxyfile])])
 AC_CONFIG_LINKS([contrib/filter-lcov.py:contrib/filter-lcov.py])
