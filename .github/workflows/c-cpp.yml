@@ -21,7 +21,13 @@ jobs:
       run: ./autogen.sh
 
     - name: configure
-      run: ./configure
+      run: LDFLAGS=" -ldl " CXXFLAGS=" -fPIC " FCFLAGS=" -static "  
+           ./configure 
+              --enable-static      
+              --disable-shared     
+              --enable-asm         
+              --prefix=`pwd`/depends/x86_64-pc-linux-gnu 
+
     
     - name: make
       run: make
