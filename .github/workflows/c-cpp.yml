@@ -13,27 +13,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+#    - name: dist
+#      run: mkdir -p bin
+#           echo "abc" > bin/test.txt
+           
 
-    - name: depends
-      run: cd depends && make
+#    - name: depends
+#      run: cd depends && make
 
-    - name: autogen
-      run: ./autogen.sh
+#    - name: autogen
+#      run: ./autogen.sh
 
-    - name: configure
-      run: LDFLAGS=" -ldl " CXXFLAGS=" -fPIC " FCFLAGS=" -static "  
-           ./configure 
-              --enable-static      
-              --disable-shared     
-              --enable-asm         
-              --prefix=`pwd`/depends/x86_64-pc-linux-gnu 
+#    - name: configure
+#      run: LDFLAGS=" -ldl " CXXFLAGS=" -fPIC " FCFLAGS=" -static "  
+#           ./configure 
+#              --enable-static      
+#              --disable-shared     
+#              --enable-asm         
+#              --prefix=`pwd`/depends/x86_64-pc-linux-gnu 
 
     
-    - name: make
-      run: make
+#    - name: make
+#      run: make
       
-    - name: make check
-      run: make check
+#    - name: make check
+#      run: make check
       
-    - name: make distcheck
-      run: make distcheck
