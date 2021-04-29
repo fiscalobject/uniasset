@@ -18,7 +18,7 @@ jobs:
       run: cd depends && make
 
     - name: autogen
-      run: ./autogen
+      run: ./autogen.sh
 
     - name: configure
       run: ./configure
