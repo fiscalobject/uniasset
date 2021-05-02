@@ -175,7 +175,7 @@ public:
         consensus.BIP34Hash = uint256S("0x45b4e55bddf20dfeb69ef2a35dd36f58dd45d5f4582c1a4ca1c1b78eef8f8c37");
         consensus.BIP65Height = 0;
         consensus.BIP66Height = 0;
-        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.checkpointPubKey = "04d0dd87fbb6ac3483f57c9cd010c8fa804219ec641fad97a9cbb31605327b15fa9c40232fa214f02b80883955f7b14e49dbd03e44d45123f06ee08b911a08be33";
         consensus.nPowTargetTimespan = 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 90;

@@ -134,3 +134,7 @@ db4/
 
 # clang-check
 *.plist
+
+z-*
+*.org
+configure.sh
