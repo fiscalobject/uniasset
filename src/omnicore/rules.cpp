@@ -118,7 +118,7 @@ std::vector<TransactionCheckpoint> CMainConsensusParams::GetTransactions() const
 CMainConsensusParams::CMainConsensusParams()
 {
     // Uniasset genesis block
-    GENESIS_BLOCK = 100000000;
+    GENESIS_BLOCK = 2345678; // Estimated date ~ 10th of August, 2021   // not activated:  GENESIS_BLOCK = 100000000;
     // Notice range for feature activations:
     MIN_ACTIVATION_BLOCKS = 20160;  // ~2 weeks
     MAX_ACTIVATION_BLOCKS = 120960; // ~12 weeks
