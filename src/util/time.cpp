@@ -79,7 +79,7 @@ void MilliSleep(int64_t n)
 std::string FormatISO8601DateTime(int64_t nTime) {
     struct tm ts;
     time_t time_val = nTime;
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(CROSS_WIN)
     gmtime_s(&ts, &time_val);
 #else
     gmtime_r(&time_val, &ts);
@@ -90,7 +90,7 @@ std::string FormatISO8601DateTime(int64_t nTime) {
 std::string FormatISO8601Date(int64_t nTime) {
     struct tm ts;
     time_t time_val = nTime;
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(CROSS_WIN)
     gmtime_s(&ts, &time_val);
 #else
     gmtime_r(&time_val, &ts);
@@ -101,10 +101,10 @@ std::string FormatISO8601Date(int64_t nTime) {
 std::string FormatISO8601Time(int64_t nTime) {
     struct tm ts;
     time_t time_val = nTime;
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(CROSS_WIN)
     gmtime_s(&ts, &time_val);
 #else
-    gmtime_r(&time_val, &ts);
+   gmtime_r(&time_val, &ts);
 #endif
     return strprintf("%02i:%02i:%02iZ", ts.tm_hour, ts.tm_min, ts.tm_sec);
 }
